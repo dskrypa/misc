@@ -2,6 +2,8 @@
 '''
 Bogobogosort
 
+This is not intended to be efficient!  It is a purposefully inefficient algorithm intended as a joke.
+
 This implementation of Bogobogosort is based on the description found here:
 http://www.dangermouse.net/esoteric/bogobogosort.html
 '''
