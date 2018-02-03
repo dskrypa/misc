@@ -4,6 +4,8 @@ Multithreaded multiline CLI output tests / examples
 
 The end-goal is to figure out how to present an ordered table of sorted rows, where rows will be made available out of
 order compared to where they should be printed in the table.
+
+Tested with Python 3.5.1
 """
 
 import time
@@ -27,7 +29,7 @@ def main():
     elif args.urwid:
         urwid_example()
     else:
-        print("Invalid option.")
+        print("Invalid option - use -b or -u to see the blessings / urwid examples")
 
 
 def wait_and_return(n):
@@ -36,22 +38,32 @@ def wait_and_return(n):
 
 
 def urwid_example():
+    """
+    This example ends up going full-screen.  I would try to take the time to figure out how to stop that, but for my
+    final use case, it was easier to just use blessings.
+    """
     lines = 10
     output = OrderedDict((n, "") for n in range(lines))
+
     txt = urwid.Text("\n".join(output.values()))
     frame = urwid.Filler(txt, valign="bottom")
     loop = urwid.MainLoop(frame)
+
     with loop.start():
         with futures.ThreadPoolExecutor(max_workers=lines) as fexec:
             to_do_map = {fexec.submit(wait_and_return, n): n for n in range(lines)}
             for future in futures.as_completed(to_do_map):
                 n = to_do_map[future]
                 output[n] = future.result()
+
                 txt.set_text("\n".join(output.values()))
                 loop.draw_screen()
 
 
 def blessings_example():
+    """
+    This does exactly what I wanted, but may have issues when output scrolls past the top of the terminal window.
+    """
     term = Terminal()
     lines = 10
 
